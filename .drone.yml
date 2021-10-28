@@ -10,7 +10,7 @@ platform:
 steps:
 
 - name: build
-  image: golang
+  image: thomaslacaze/go-opencv-zbar
   commands:
     - go build
 ###
