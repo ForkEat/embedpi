@@ -11,6 +11,7 @@ steps:
 
 - name: build
   image: thomaslacaze/go-opencv-zbar
+  pull: always
   commands:
     - go build
 ###
