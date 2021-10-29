@@ -14,21 +14,21 @@ steps:
     - go build
     - go test ./...
 
----
+# ---
 
-kind: pipeline
-type: docker
-name: linux-arm64
+# kind: pipeline
+# type: docker
+# name: linux-arm64
 
-platform:
-  arch: arm64
-  os: linux
+# platform:
+#   arch: arm64
+#   os: linux
 
-steps:
-- name: build & test
-  image: thomaslacaze/go-opencv-zbar
-  pull: always
-  commands:
-    - go build
-    - go test ./...
+# steps:
+# - name: build & test
+#   image: thomaslacaze/go-opencv-zbar
+#   pull: always
+#   commands:
+#     - go build
+#     - go test ./...
 
