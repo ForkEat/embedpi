@@ -1,16 +1,14 @@
 package iotwifi
 
 import (
+	"embed/config"
 	"os/exec"
-
-	"github.com/bhoriuchi/go-bunyan/bunyan"
 )
 
 // Command for device network commands.
 type Command struct {
-	Log      bunyan.Logger
 	Runner   CmdRunner
-	SetupCfg *SetupCfg
+	SetupCfg *config.SetupCfg
 }
 
 // RemoveApInterface removes the AP interface.

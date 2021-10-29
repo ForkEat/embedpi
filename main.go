@@ -1,5 +1,3 @@
-// IoT Wifi Management
-
 package main
 
 import (
@@ -8,14 +6,13 @@ import (
 	"io/ioutil"
 	"main/config"
 	"net/http"
-	"os"
 	"strings"
 
-	"github.com/bhoriuchi/go-bunyan/bunyan"
 	"github.com/bieber/barcode"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/txn2/txwifi/iotwifi"
+	"go.uber.org/zap"
 	"gocv.io/x/gocv"
 )
 
@@ -64,26 +61,33 @@ func barcodeScan() {
 
 func main() {
 
-	logConfig := bunyan.Config{
-		Name:   "txwifi",
-		Stream: os.Stdout,
-		Level:  bunyan.LogLevelDebug,
+	// Load configuration
+	appConfig := config.LoadConfig()
+	env.Parse(&appConfig)
+
+	var logger *zap.Logger
+	var err error
+
+	deviceConfig := config.LoadCfg()
+
+	// Set log level
+	if DeviceConfig.IsDev() {
+		logger, err = zap.NewDevelopment()
+	} else {
+		logger, err = zap.NewProduction()
 	}
 
-	blog, err := bunyan.CreateLogger(logConfig)
 	if err != nil {
-		panic(err)
+		zap.S().Info("Error to initialize logger")
 	}
 
-	blog.Info("Starting IoT Wifi...")
+	defer logger.Sync()
+	zap.ReplaceGlobals(logger)
 
 	messages := make(chan iotwifi.CmdMessage, 1)
 
-	cfgUrl := config.SetEnvIfEmpty("IOTWIFI_CFG", "cfg/wificfg.json")
-	port := config.SetEnvIfEmpty("IOTWIFI_PORT", "8080")
-
-	go iotwifi.RunWifi(blog, messages, cfgUrl)
-	wpacfg := iotwifi.NewWpaCfg(blog, cfgUrl)
+	go iotwifi.RunWifi(messages, deviceConfig)
+	wpacfg := iotwifi.NewWpaCfg(deviceConfig)
 
 	apiPayloadReturn := func(w http.ResponseWriter, message string, payload interface{}) {
 		apiReturn := &ApiReturn{
@@ -102,7 +106,7 @@ func main() {
 		bytes, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			blog.Error(err)
+			zap.S().Error(err)
 			return
 		}
 
@@ -113,7 +117,7 @@ func main() {
 		err = decoder.Decode(&v)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			blog.Error(err)
+			zap.S().Error(err)
 			return
 		}
 	}
@@ -135,7 +139,7 @@ func main() {
 
 		status, err := wpacfg.Status()
 		if err != nil {
-			blog.Error(err.Error())
+			zap.S().Error(err.Error())
 			return
 		}
 
@@ -147,11 +151,11 @@ func main() {
 		var creds iotwifi.WpaCredentials
 		marshallPost(w, r, &creds)
 
-		blog.Info("Connect Handler Got: ssid:|%s| psk:|%s|", creds.Ssid, creds.Psk)
+		zap.S().Infof("Connect Handler Got: ssid:|%s| psk:|%s|", creds.Ssid, creds.Psk)
 
 		connection, err := wpacfg.ConnectNetwork(creds)
 		if err != nil {
-			blog.Error(err.Error())
+			zap.S().Error(err.Error())
 			return
 		}
 
@@ -173,7 +177,7 @@ func main() {
 
 	// scan for wifi networks
 	scanHandler := func(w http.ResponseWriter, r *http.Request) {
-		blog.Info("Got Scan")
+		zap.S().Info("Got Scan")
 		wpaNetworks, err := wpacfg.ScanNetworks()
 		if err != nil {
 			retError(w, err)
@@ -222,7 +226,7 @@ func main() {
 			staticFields["method"] = r.Method
 			staticFields["url"] = r.RequestURI
 
-			blog.Info(staticFields, "HTTP")
+			zap.S().Info(staticFields, "HTTP")
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -244,10 +248,10 @@ func main() {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS", "DELETE"})
 
 	// serve http
-	blog.Info("HTTP Listening on " + port)
+	zap.S().Info("HTTP Listening on " + appConfig.Port)
 
 	go func() {
-		http.ListenAndServe(":"+port, handlers.CORS(originsOk, headersOk, methodsOk)(r))
+		http.ListenAndServe(":"+appConfig.Port, handlers.CORS(originsOk, headersOk, methodsOk)(r))
 	}()
 
 	go func() {

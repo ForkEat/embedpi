@@ -6,21 +6,18 @@ package iotwifi
 
 import (
 	"bufio"
-	"encoding/json"
+	"embed/config"
 	"io"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"os/exec"
-	"regexp"
 	"time"
 
 	"github.com/bhoriuchi/go-bunyan/bunyan"
+	"go.uber.org/zap"
 )
 
 // CmdRunner runs internal commands allows output handlers to be attached.
 type CmdRunner struct {
-	Log      bunyan.Logger
 	Messages chan CmdMessage
 	Handlers map[string]func(CmdMessage)
 	Commands map[string]*exec.Cmd
@@ -36,76 +33,30 @@ type CmdMessage struct {
 	Stdin   *io.WriteCloser
 }
 
-// loadCfg loads the configuration.
-func loadCfg(cfgLocation string) (*SetupCfg, error) {
-
-	v := &SetupCfg{}
-	var jsonData []byte
-
-	urlDelimR, _ := regexp.Compile("://")
-	isUrl := urlDelimR.Match([]byte(cfgLocation))
-
-	// if not a url
-	if !isUrl {
-		fileData, err := ioutil.ReadFile(cfgLocation)
-		if err != nil {
-			panic(err)
-		}
-		jsonData = fileData
-	}
-
-	if isUrl {
-		res, err := http.Get(cfgLocation)
-		if err != nil {
-			panic(err)
-		}
-
-		defer res.Body.Close()
-
-		urlData, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			panic(err)
-		}
-
-		jsonData = urlData
-	}
-
-	err := json.Unmarshal(jsonData, v)
-
-	return v, err
-}
-
 // RunWifi starts AP and Station modes.
-func RunWifi(log bunyan.Logger, messages chan CmdMessage, cfgLocation string) {
+func RunWifi(log bunyan.Logger, messages chan CmdMessage, setupCfg *config.SetupCfg) {
 
-	log.Info("Loading IoT Wifi...")
+	zap.S().Info("Loading IoT Wifi...")
 
 	cmdRunner := CmdRunner{
-		Log:      log,
 		Messages: messages,
 		Handlers: make(map[string]func(cmsg CmdMessage), 0),
 		Commands: make(map[string]*exec.Cmd, 0),
 	}
 
-	setupCfg, err := loadCfg(cfgLocation)
-	if err != nil {
-		log.Error("Could not load config: %s", err.Error())
-		return
-	}
-
 	command := &Command{
-		Log:      log,
 		Runner:   cmdRunner,
 		SetupCfg: setupCfg,
 	}
 
 	// listen to kill messages
 	cmdRunner.HandleFunc("kill", func(cmsg CmdMessage) {
-		log.Error("GOT KILL")
+		zap.S().Error("GOT KILL")
 		os.Exit(1)
 	})
 
-	wpacfg := NewWpaCfg(log, cfgLocation)
+	wpacfg := NewWpaCfg(log, setupCfg)
+
 	wpacfg.StartAP()
 
 	time.Sleep(10 * time.Second)
@@ -140,7 +91,7 @@ func RunWifi(log bunyan.Logger, messages chan CmdMessage, cfgLocation string) {
 		staticFields["cmd"] = out.Command
 		staticFields["is_error"] = out.Error
 
-		log.Info(staticFields, out.Message)
+		zap.S().Info(staticFields, out.Message)
 
 		if handler, ok := cmdRunner.Handlers[out.Id]; ok {
 			handler(out)
@@ -155,7 +106,7 @@ func (c *CmdRunner) HandleFunc(cmdId string, handler func(cmdMessage CmdMessage)
 
 // ProcessCmd processes an internal command.
 func (c *CmdRunner) ProcessCmd(id string, cmd *exec.Cmd) {
-	c.Log.Debug("ProcessCmd got %s", id)
+	zap.S().Debug("ProcessCmd got %s", id)
 
 	// add command to the commands map TODO close the readers
 	c.Commands[id] = cmd

@@ -1,4 +1,3 @@
-###
 kind: pipeline
 type: docker
 name: linux-amd64
@@ -9,9 +8,29 @@ platform:
 
 steps:
 
-- name: build
+- name: build && test
   image: thomaslacaze/go-opencv-zbar
   pull: always
   commands:
     - go build
-###
+    - go test
+---
+
+
+kind: pipeline
+type: docker
+name: linux-amd64
+
+platform:
+  arch: amd64
+  os: linux
+
+steps:
+
+- name: build && test
+  image: thomaslacaze/go-opencv-zbar
+  pull: always
+  commands:
+    - go build
+    - go test
+---
