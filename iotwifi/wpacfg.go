@@ -3,13 +3,12 @@ package iotwifi
 import (
 	"bufio"
 	"bytes"
-	"embed/config"
+	"embedpi/config"
 	"os/exec"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/bhoriuchi/go-bunyan/bunyan"
 	"go.uber.org/zap"
 )
 
@@ -43,7 +42,7 @@ type WpaConnection struct {
 }
 
 // NewWpaCfg produces WpaCfg configuration types.
-func NewWpaCfg(log bunyan.Logger, setupCfg *config.SetupCfg) *WpaCfg {
+func NewWpaCfg(setupCfg *config.SetupCfg) *WpaCfg {
 
 	return &WpaCfg{
 		WpaCfg: setupCfg,

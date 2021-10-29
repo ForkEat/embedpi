@@ -1,7 +1,7 @@
 package config
 
 import (
-	"embed/utils"
+	"embedpi/utils"
 	"encoding/json"
 	"io/ioutil"
 )

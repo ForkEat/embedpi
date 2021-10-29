@@ -1,7 +1,7 @@
 package iotwifi
 
 import (
-	"embed/config"
+	"embedpi/config"
 	"os/exec"
 )
 

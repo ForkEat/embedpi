@@ -6,13 +6,12 @@ package iotwifi
 
 import (
 	"bufio"
-	"embed/config"
+	"embedpi/config"
 	"io"
 	"os"
 	"os/exec"
 	"time"
 
-	"github.com/bhoriuchi/go-bunyan/bunyan"
 	"go.uber.org/zap"
 )
 
@@ -34,7 +33,7 @@ type CmdMessage struct {
 }
 
 // RunWifi starts AP and Station modes.
-func RunWifi(log bunyan.Logger, messages chan CmdMessage, setupCfg *config.SetupCfg) {
+func RunWifi(messages chan CmdMessage, setupCfg *config.SetupCfg) {
 
 	zap.S().Info("Loading IoT Wifi...")
 
@@ -55,7 +54,7 @@ func RunWifi(log bunyan.Logger, messages chan CmdMessage, setupCfg *config.Setup
 		os.Exit(1)
 	})
 
-	wpacfg := NewWpaCfg(log, setupCfg)
+	wpacfg := NewWpaCfg(setupCfg)
 
 	wpacfg.StartAP()
 

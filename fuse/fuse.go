@@ -1,7 +1,7 @@
 package fuse
 
 import (
-	"embed/config"
+	"embedpi/config"
 
 	"github.com/wmarbut/go-epdfuse"
 	"go.uber.org/zap"

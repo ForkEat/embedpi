@@ -1,17 +1,19 @@
 package main
 
 import (
+	"embedpi/config"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"main/config"
 	"net/http"
 	"strings"
 
+	"embedpi/iotwifi"
+
 	"github.com/bieber/barcode"
+	"github.com/caarlos0/env"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/txn2/txwifi/iotwifi"
 	"go.uber.org/zap"
 	"gocv.io/x/gocv"
 )
@@ -62,23 +64,26 @@ func barcodeScan() {
 func main() {
 
 	// Load configuration
-	appConfig := config.LoadConfig()
+	appConfig := config.AppConfig{}
 	env.Parse(&appConfig)
 
 	var logger *zap.Logger
 	var err error
 
-	deviceConfig := config.LoadCfg()
+	deviceConfig, err := config.LoadCfg(appConfig.CfgUrl)
+	if err != nil {
+		zap.S().Error("Error to read file")
+	}
 
 	// Set log level
-	if DeviceConfig.IsDev() {
+	if deviceConfig.IsDev() {
 		logger, err = zap.NewDevelopment()
 	} else {
 		logger, err = zap.NewProduction()
 	}
 
 	if err != nil {
-		zap.S().Info("Error to initialize logger")
+		zap.S().Error("Error to initialize logger")
 	}
 
 	defer logger.Sync()
