@@ -89,8 +89,6 @@ func getDefaultConfig() (*SetupCfg, error) {
 			},
 			"host_apd_cfg": {
 				"ip": "192.168.27.1",
-				"ssid": "iot-wifi-cfg-3",
-				"wpa_passphrase": "iotwifipass",
 				"channel": "6"
 			},
 			"wpa_supplicant_cfg": {

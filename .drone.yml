@@ -7,12 +7,12 @@ platform:
   os: linux
 
 steps:
-- name: build && test
+- name: build & test
   image: thomaslacaze/go-opencv-zbar
   pull: always
   commands:
     - go build
-    - go test
+    - go test ./...
 
 ---
 
@@ -25,10 +25,10 @@ platform:
   os: linux
 
 steps:
-- name: build && test
+- name: build & test
   image: thomaslacaze/go-opencv-zbar
   pull: always
   commands:
     - go build
-    - go test
+    - go test ./...
 
