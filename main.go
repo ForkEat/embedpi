@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embedpi/barcode"
 	"embedpi/config"
 	"net/http"
 
@@ -86,9 +85,9 @@ func main() {
 	// serve http
 	zap.S().Info("HTTP Listening on " + appConfig.Port)
 
-	go func() {
-		barcode.RunScan()
-	}()
+	// go func() {
+	// 	barcode.RunScan()
+	// }()
 
 	http.ListenAndServe(":"+appConfig.Port, handlers.CORS(originsOk, headersOk, methodsOk)(r))
 }

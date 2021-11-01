@@ -7,8 +7,8 @@ import (
 )
 
 type AppConfig struct {
-	Port        string `default:"8080" env:"PORT"`
-	CfgUrl      string `default:"config.json" env:"CFG_URL"`
+	Port        string `envDefault:"8080" env:"PORT"`
+	CfgUrl      string `envDefault:"config.json" env:"CFG_URL"`
 	Environment string `json:"environment"`
 }
 

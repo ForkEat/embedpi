@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/alecthomas/assert"
+	"github.com/caarlos0/env"
 )
 
 func TestIsDev(t *testing.T) {
@@ -13,6 +14,14 @@ func TestIsDev(t *testing.T) {
 	assert.False(t, IsDev("prod"))
 	assert.False(t, IsDev("production"))
 	assert.False(t, IsDev("anything else"))
+}
+
+func TestDefaultAppConfig(t *testing.T) {
+	appConfig := AppConfig{}
+	err := env.Parse(&appConfig)
+
+	assert.NoError(t, err)
+	assert.Equal(t, appConfig, AppConfig{Port: "8080", CfgUrl: "config.json"})
 }
 
 func TestAppConfigIsDev(t *testing.T) {
