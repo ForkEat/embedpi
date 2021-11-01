@@ -16,7 +16,7 @@ func random(chars []rune, length int) string {
 }
 
 func GenerateSSID() string {
-	return "fork-eat-" + random([]rune("0123456789"), 8)
+	return "fork-eat-" + random([]rune("0123456789"), 4)
 }
 
 func GeneratePassword() string {
