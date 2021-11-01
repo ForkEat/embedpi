@@ -16,7 +16,7 @@ func TestIsDev(t *testing.T) {
 }
 
 func TestAppConfigIsDev(t *testing.T) {
-	c := SetupCfg{
+	c := AppConfig{
 		Environment: "dev",
 	}
 	assert.True(t, c.IsDev())
@@ -49,7 +49,6 @@ func TestLoad2(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, appConfig, &SetupCfg{
-		Environment: "dev",
 		FuseCfg: FuseCfg{
 			Active: true,
 			Device: "/dev/epd",

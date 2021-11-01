@@ -87,5 +87,4 @@ func main() {
 	go func() {
 		barcode.RunScan()
 	}()
-
 }

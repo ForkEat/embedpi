@@ -7,8 +7,9 @@ import (
 )
 
 type AppConfig struct {
-	Port   string `default:"8080" env:"PORT"`
-	CfgUrl string `default:"config.json" env:"CFG_URL"`
+	Port        string `default:"8080" env:"PORT"`
+	CfgUrl      string `default:"config.json" env:"CFG_URL"`
+	Environment string `json:"environment"`
 }
 
 // FuseCfg is the eink config file.
@@ -25,7 +26,6 @@ type SetupCfg struct {
 	HostApdCfg       HostApdCfg       `json:"host_apd_cfg"`
 	WpaSupplicantCfg WpaSupplicantCfg `json:"wpa_supplicant_cfg"`
 	FuseCfg          FuseCfg          `json:"fuse_cfg"`
-	Environment      string           `json:"environment"`
 }
 
 // DnsmasqCfg configures dnsmasq and is used by SetupCfg.
@@ -48,8 +48,8 @@ type WpaSupplicantCfg struct {
 	CfgFile string `json:"cfg_file"` // /etc/wpa_supplicant/wpa_supplicant.conf
 }
 
-func (s *SetupCfg) IsDev() bool {
-	return IsDev(s.Environment)
+func (app *AppConfig) IsDev() bool {
+	return IsDev(app.Environment)
 }
 
 //IsDev return true if application is on dev stack
