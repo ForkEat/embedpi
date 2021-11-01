@@ -15,6 +15,7 @@ import (
 )
 
 // TODO :
+// - display on eink ssid name & password if no internet or access to fork-eat API
 // - display on eink barcode
 // - add in API a way to log in into forkeat-server
 // - get product with barcode
