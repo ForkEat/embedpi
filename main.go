@@ -15,6 +15,12 @@ import (
 	"go.uber.org/zap"
 )
 
+// TODO :
+// - display on eink barcode
+// - add in API a way to log in into forkeat-server
+// - get product with barcode
+// - add menu to eink (add/remove product)
+
 func main() {
 
 	// Load configuration
@@ -30,7 +36,7 @@ func main() {
 	}
 
 	// Set log level
-	if deviceConfig.IsDev() {
+	if appConfig.IsDev() {
 		logger, err = zap.NewDevelopment()
 	} else {
 		logger, err = zap.NewProduction()
@@ -81,10 +87,8 @@ func main() {
 	zap.S().Info("HTTP Listening on " + appConfig.Port)
 
 	go func() {
-		http.ListenAndServe(":"+appConfig.Port, handlers.CORS(originsOk, headersOk, methodsOk)(r))
-	}()
-
-	go func() {
 		barcode.RunScan()
 	}()
+
+	http.ListenAndServe(":"+appConfig.Port, handlers.CORS(originsOk, headersOk, methodsOk)(r))
 }
