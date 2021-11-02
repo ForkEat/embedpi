@@ -8,7 +8,7 @@ import (
 
 func TestGenerateSSID(t *testing.T) {
 	ssid := GenerateSSID()
-	assert.Regexp(t, "^fork-eat|[0-9]{8}$", ssid)
+	assert.Regexp(t, "^Fork-eat|[0-9]{8}$", ssid)
 }
 
 func TestGeneratePassword(t *testing.T) {
