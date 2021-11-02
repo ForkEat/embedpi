@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"embedpi/config"
 	"embedpi/eink"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -63,11 +64,19 @@ func RunWifi(messages chan CmdMessage, setupCfg *config.SetupCfg) {
 
 	wpacfg := NewWpaCfg(setupCfg)
 
+	if command.Epd != nil {
+		eink.DisplayText("Creating your network ...", command.Epd)
+	}
+
 	wpacfg.StartAP()
 
 	time.Sleep(10 * time.Second)
 
 	command.StartWpaSupplicant()
+
+	if command.Epd != nil {
+		eink.DisplayText(fmt.Sprintf("Welcome \nSsid:%s\nPassword:%s", command.SetupCfg.HostApdCfg.Ssid, command.SetupCfg.HostApdCfg.WpaPassphrase), command.Epd)
+	}
 
 	// Scan
 	time.Sleep(5 * time.Second)

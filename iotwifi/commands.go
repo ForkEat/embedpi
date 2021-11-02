@@ -2,8 +2,6 @@ package iotwifi
 
 import (
 	"embedpi/config"
-	"embedpi/eink"
-	"fmt"
 	"os/exec"
 
 	"github.com/otaviokr/go-epaper-lib"
@@ -61,10 +59,6 @@ func (c *Command) StartWpaSupplicant() {
 	}
 
 	cmd := exec.Command("wpa_supplicant", args...)
-
-	if c.Epd != nil {
-		eink.DisplayText(fmt.Sprintf("Welcome \nSsid:%s\nPassword:%s", c.SetupCfg.HostApdCfg.Ssid, c.SetupCfg.HostApdCfg.WpaPassphrase), c.Epd)
-	}
 	go c.Runner.ProcessCmd("wpa_supplicant", cmd)
 }
 
