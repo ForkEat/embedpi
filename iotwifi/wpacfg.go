@@ -85,17 +85,17 @@ func (wpa *WpaCfg) StartAP() {
 	}()
 
 	cfg := `interface=uap0
-		ssid=` + wpa.WpaCfg.HostApdCfg.Ssid + `
-		hw_mode=g
-		channel=` + wpa.WpaCfg.HostApdCfg.Channel + `
-		macaddr_acl=0
-		auth_algs=1
-		ignore_broadcast_ssid=0
-		wpa=2
-		wpa_passphrase=` + wpa.WpaCfg.HostApdCfg.WpaPassphrase + `
-		wpa_key_mgmt=WPA-PSK
-		wpa_pairwise=TKIP
-		rsn_pairwise=CCMP`
+ssid=` + wpa.WpaCfg.HostApdCfg.Ssid + `
+hw_mode=g
+channel=` + wpa.WpaCfg.HostApdCfg.Channel + `
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=` + wpa.WpaCfg.HostApdCfg.WpaPassphrase + `
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP`
 
 	zap.S().Infof("Hostapd CFG: %s", cfg)
 	hostapdPipe.Write([]byte(cfg))
