@@ -7,6 +7,7 @@ package iotwifi
 import (
 	"bufio"
 	"embedpi/config"
+	"embedpi/eink"
 	"io"
 	"os"
 	"os/exec"
@@ -43,9 +44,15 @@ func RunWifi(messages chan CmdMessage, setupCfg *config.SetupCfg) {
 		Commands: make(map[string]*exec.Cmd, 0),
 	}
 
+	einkDevice, err := eink.NewEinkDevice()
+	if err != nil {
+		zap.S().Info("Unable to setup eink screen")
+	}
+
 	command := &Command{
 		Runner:   cmdRunner,
 		SetupCfg: setupCfg,
+		Epd:      einkDevice,
 	}
 
 	// listen to kill messages

@@ -9,16 +9,16 @@ import (
 	"github.com/otaviokr/go-epaper-lib"
 )
 
-func InitEink() error {
+func NewEinkDevice() (*epaper.EPaper, error) {
 	// Create new EPaperDisplay handler.
 	epd, err := epaper.New(epaper.Model2in7bw)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	epd.Init()
 	//epd.ClearScreen()
-	return err
+	return epd, err
 }
 
 func DisplayText(text string, epd *epaper.EPaper) {
