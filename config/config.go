@@ -12,20 +12,11 @@ type AppConfig struct {
 	Environment string `json:"environment"`
 }
 
-// FuseCfg is the eink config file.
-type FuseCfg struct {
-	Active bool   `json:"active"`
-	Device string `json:"device"`
-	Width  int    `json:"width"`
-	Height int    `json:"height"`
-}
-
 // SetupCfg is the main configuration structure.
 type SetupCfg struct {
 	DnsmasqCfg       DnsmasqCfg       `json:"dnsmasq_cfg"`
 	HostApdCfg       HostApdCfg       `json:"host_apd_cfg"`
 	WpaSupplicantCfg WpaSupplicantCfg `json:"wpa_supplicant_cfg"`
-	FuseCfg          FuseCfg          `json:"fuse_cfg"`
 }
 
 // DnsmasqCfg configures dnsmasq and is used by SetupCfg.

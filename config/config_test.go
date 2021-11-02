@@ -58,12 +58,6 @@ func TestLoad2(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, appConfig, &SetupCfg{
-		FuseCfg: FuseCfg{
-			Active: true,
-			Device: "/dev/epd",
-			Width:  264,
-			Height: 176,
-		},
 		WpaSupplicantCfg: WpaSupplicantCfg{
 			CfgFile: "/etc/wpa_supplicant/wpa_supplicant.conf",
 		},
@@ -84,12 +78,6 @@ func getDefaultConfig() (*SetupCfg, error) {
 	err := json.Unmarshal([]byte(`
 		{
 			"environment": "dev",
-			"fuse_cfg": {
-				"active": true,
-				"device": "/dev/epd",
-				"width": 264,
-				"height": 176
-			},
 			"dnsmasq_cfg": {
 				"address": "/#/192.168.27.1",
 				"dhcp_range": "192.168.27.100,192.168.27.150,1h",
