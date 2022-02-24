@@ -15,6 +15,52 @@ $ pkill wpa_supplicant
 $ sudo ./embed
 ```
 
+## Developpement setup 
+
+
+```sh
+# Go install #
+# Change pi password before or remove warning
+$ git clone https://github.com/udhos/update-golang
+$ cd update-golang
+$ sudo ./update-golang.sh
+$ nano /home/pi/.bashrc
+> export GOROOT=/usr/local/go
+> export GOPATH=$HOME/go
+> export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+$ source /home/pi/.bashrc
+$ mkdir /home/pi/go && mkdir /home/pi/go/src
+
+# Install zbar
+$ sudo apt install libzbar0 zbar-tools libzbar-dev
+
+# Txwifi requirements
+$ sudo apt install dnsmaq iw wireless-tools hostapd 
+
+# Install OpenCV
+$ sudo nano /etc/dphys-swapfile
+> CONF_SWAPSIZE=1024
+$ sudo /etc/init.d/dphys-swapfile restart
+$ sudo apt update
+$ sudo apt install build-essential cmake git pkg-config libgtk-3-dev "libcanberra-gtk*"
+$ sudo apt install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev
+$ sudo apt install libjpeg-dev libpng-dev libtiff-dev gfortran openexr libatlas-base-dev opencl-headers libopencv-dev
+$ sudo apt install python3-dev python3-numpy libtbb2 libtbb-dev libdc1394-22-dev
+$ mkdir ~/opencv_build && cd ~/opencv_build
+$ git clone https://github.com/opencv/opencv.git
+$ git clone https://github.com/opencv/opencv_contrib.git
+$ mkdir -p ~/opencv_build/opencv/build && cd ~/opencv_build/opencv/build
+$ cmake -D CMAKE_BUILD_TYPE=RELEASE \ -D -DOPENCV_GENERATE_PKGCONFIG=ON -D CMAKE_INSTALL_PREFIX=/usr/local \ -D INSTALL_C_EXAMPLES=OFF \ -D INSTALL_PYTHON_EXAMPLES=OFF \ -D OPENCV_GENERATE_PKGCONFIG=ON \ -D ENABLE_NEON=ON \ -D OPENCV_EXTRA_EXE_LINKER_FLAGS=-latomic \ -D ENABLE_VFPV3=ON \ -D BUILD_TESTS=OFF \ -D OPENCV_ENABLE_NONFREE=ON \ -D OPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \ -D BUILD_EXAMPLES=OFF ..
+$ make -j4
+$ sudo make install
+$ sudo pkg-config --cflags --libs opencv4
+
+$ rm -rf ~/opencv_build
+$ sudo nano /etc/dphys-swapfile
+> CONF_SWAPSIZE=100
+$ /etc/init.d/dphys-swapfile restart
+```
+
 ### Connect to the Pi over Wifi
 
 On your laptop or phone, you should now see a Wifi Network named **iot-wifi-cfg-3** assuming you did not change it from the default. The default password for this network is **iotwifipass**. Once connected to this network you should get an IP address assigned to the range specified in the config: `192.168.27.100,192.168.27.150,1h`.
